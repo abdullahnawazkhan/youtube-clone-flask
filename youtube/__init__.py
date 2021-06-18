@@ -5,4 +5,9 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 
-from youtube import routes
+app.secret_key = urandom(12)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+
+db = SQLAlchemy(app)
+
+from youtube import routes, models
