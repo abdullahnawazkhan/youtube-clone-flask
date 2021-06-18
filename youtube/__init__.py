@@ -10,4 +10,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
 db = SQLAlchemy(app)
 
+bcrypt = Bcrypt(app)
+
 from youtube import routes, models

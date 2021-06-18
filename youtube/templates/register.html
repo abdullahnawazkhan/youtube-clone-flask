@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Registration
+{% endblock title %}
+
+{% block body %}
+	<div class="container">
+		<h2>Registration Form</h2>
+
+		<div id="message_area">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					{% for type, m in messages %}
+						<!-- {% if type == "success" %}
+							<div class="alert alert-success">
+								{{ m }}
+							</div>
+						{% endif %} -->
+						{% if type == "error" %}
+							<div class="alert alert-danger">
+								{{ m }}
+							</div>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			{% endwith %}	
+		</div>
+
+		<form name='form' action="/register" method='post' onsubmit='return validatePassword()'>
+			<div class="form-group">
+				<label for="username" class='form-label'>Username</label>
+				<input type="text" name="username" id="username" class='form-control' required>
+			</div>
+
+			<div class='form-group'>
+				<label for="email" class='form-label'>Email</label>
+				<input type="email" name="email" id="email" class='form-control' required>
+			</div>
+
+			<div class='form-group'>
+				<label for="password" class='form-label'>Password</label>
+				<input type="password" name="password" id="password" class='form-control' required>
+			</div>
+
+			<div class='form-group'>
+				<label for="password_2" class='form-label'>Re-Enter Password</label>
+				<input type="password" name="password_2" id="password_2" class='form-control' required>
+			</div>
+
+			<input type="submit" value="Create Account" class='btn btn-primary'>
+		</form>
+		<a href="{{ url_for('login') }}">Already have an Account? Click here</a>
+	</div>
+
+	<script>
+		function validatePassword() {
+			var password_1 = document.forms["form"]["password"].value;
+			var password_2 = document.forms["form"]["password_2"].value;
+
+			if (password_2 != password_1) {
+				var message_area = document.getElementById("message_area");
+				message_area.innerHTML = "<div class='alert alert-danger'> Passwords Do Not Match</div>";
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+	</script>
+{% endblock body %}
