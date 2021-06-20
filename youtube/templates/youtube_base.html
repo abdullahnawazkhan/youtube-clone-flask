@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<nav class='navbar bg-white px-5 d-flex flex-nowrap border fixed-top'>
+		<div class='pe-4'>
+			<img src="{{ url_for('static', filename='/images/menu.png') }}" alt="menu" width='30px'>
+		</div>
+
+		<a href="{{ url_for('home') }}" class='navbar-brand text-secondary'>
+			<img src="{{ url_for('static', filename='/images/youtube.png') }}" alt="youtube_logo" width="50px">
+			Youtube
+		</a>
+
+		<form action="/search" method="GET" class='flex-grow-1 px-5'>
+			<div class='d-flex'>
+				<input type="text" name="search" id="search" placeholder="Search" class='flex-grow-1'>
+				<button type="submit" class='p-2 btn btn-light'>
+					<img src="{{ url_for('static', filename='/images/search.png') }}" width='20px' alt="search_button">
+				</button>
+				<!-- <input type="submit" value="Search" class='btn btn-outline-success'> -->
+			</div>
+		</form>
+
+		{% if session['user_id'] %}
+			<a href="#" class='px-4'>
+				<img src="{{ url_for('static', filename='/images/upload.png') }}" alt="upload_video" width='35px'>
+			</a>
+		{% endif %}
+
+		{% if session['user_id'] %}
+			<a href="{{ url_for('logout') }}" class='px-4'>
+				<img src="{{ url_for('static', filename='/images/logout.png') }}" alt="logout_button" width='35px'>
+			</a>
+		{% else %}
+			<a href="{{ url_for('login') }}" class='px-4'>
+				<img src="{{ url_for('static', filename='/images/login.png') }}" alt="login_button" width='35px'>
+			</a>
+		{% endif %}
+	</nav>
+
+	<div style='padding-top: 80px;'>
+		{% block data %}
+		{% endblock data %}
+	</div>	
+{% endblock body %}

@@ -12,6 +12,7 @@ class User(db.Model):
 	videos = db.relationship('Video', backref='user', lazy=True)
 	likes = db.relationship('Like', backref='user', lazy=True)
 	dislikes = db.relationship('Dislike', backref='user', lazy=True)
+	comments = db.relationship('Comment', backref='user', lazy=True)
 
 	def __repr__(self):
 		return f'<User: {self.id}, {self.email}, {self.date_created}>'
@@ -28,6 +29,7 @@ class Video(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	likes = db.relationship('Like', backref='video', lazy=True)
 	dislikes = db.relationship('Dislike', backref='video', lazy=True)
+	comments = db.relationship('Comment', backref='video', lazy=True)
 
 	def __repr__(self):
 		return f'<Video: {self.id}, {self.title}, Uploaded by {self.user.user_name} on {self.date_uploaded}>'
@@ -51,3 +53,14 @@ class Dislike(db.Model):
 
 	def __repr__(self):
 		return f'<Dislike: {self.id}, {self.video.title} disliked by {self.user.user_name}>'
+
+
+class Comment(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	text = db.Column(db.Text, nullable=False)
+
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
+
+	def __repr__(self):
+		return f'<Comment: {self.id}, made by {self.user.user_name} on {self.video.title}>'

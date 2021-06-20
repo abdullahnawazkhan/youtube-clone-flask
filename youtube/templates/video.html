@@ -1,0 +1,62 @@
+{% extends 'youtube_base.html' %}
+
+{% block title %}
+	{{ video.title }} - Youtube
+{% endblock title %}
+
+{% block data %}
+<div class='d-flex flex-row ps-5 justify-content-between'>
+	<!-- current video section -->
+	<div class='pt-3'>
+		<iframe src="{{ video.video_path }}" width="800" height="500" allowFullscreen='true' frameborder='0' scrolling='no' seamless=''></iframe>
+
+		<!-- video information section -->
+		<div class='border-top border-bottom pt-2 pb-3'>
+			
+			<h3>{{ video.title }}</h3>
+			<h6>Uploaded By {{ video.user.user_name }}</h6>
+			<h6>{{ video.date_uploaded }}</h6>
+			
+			<p>Likes: {{ video.likes|length }}</p>
+			<p>Dislikes: {{ video.dislikes|length }}</p>
+
+			{% if session['user_id'] %}
+				<!-- TODO: Need to add add_comment route -->
+				<div>
+					<img src="{{ url_for('static', filename='images/like.png') }}" alt="like button" width='25px' style='filter:invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%)'>
+					<img src="{{ url_for('static', filename='images/like.png') }}" alt="dislike button" width='25px' style='transform:scaleY(-1)'>
+				</div>
+			{% else %}
+				<h4>Please Login to Like/Dislike Video</h4>
+			{% endif %}
+		</div>
+
+		<!-- comment section -->
+		<div>
+			<!-- TODO: Add comment Section -->
+		</div>
+	</div>
+
+	<!-- recommended videos section -->
+	<div class='border-start px-5 pt-2'>
+		<div class='d-flex flex-column'>
+			<h3>Recommended Videos</h3>
+			{% for r_video in recommended %}
+				<div class='card pt-2 mb-2' style='width: 20rem;'>
+					<img src="{{ r_video.image_path }}" alt="thumnail">
+					<div class='card-body'>
+						<h5 class='card-title'>{{ r_video.title }}</h5>
+						<p class='card-text'>{{ r_video.user.user_name }}</p>
+						<!-- TODO: Need to show difference in date uploaded and today's date -->
+						<p class='card-text'>{{ r_video.date_uploaded }}</p>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+<script>
+
+</script>
+{% endblock data %}

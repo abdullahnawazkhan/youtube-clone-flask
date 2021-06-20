@@ -1,17 +1,23 @@
-# TODO: Use Sessions to keep user logged in
-
 from flask import render_template, url_for, request, redirect, session, flash
 from youtube import app, db, bcrypt
 from youtube.models import *
+import random
+from datetime import datetime
 
 
 @app.route("/")
 def home():
-	return "Hello World"
+	video_list = Video.query.all()
+	random.shuffle(video_list)
+	print(video_list)
+	return render_template("home.html", videos=video_list, todays_date = datetime.utcnow())
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+	if 'logged_in' in session:
+		return redirect(url_for("home"))
+
 	if request.method == "POST":
 		email = request.form["email"]
 		password = request.form["password"]
@@ -22,6 +28,9 @@ def login():
 			return render_template("login.html")
 		
 		if bcrypt.check_password_hash(existing_user.password, password) == True:
+			session["logged_in"] = True
+			session["user"] = existing_user
+
 			return redirect(url_for("home"))
 		else:
 			flash("Incorrect Password Entered", "error")
@@ -32,6 +41,9 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+	if 'logged_in' in session:
+		return redirect(url_for("home"))
+
 	if request.method == 'POST':
 		email = request.form["email"]
 		password = request.form["password"]
@@ -55,3 +67,20 @@ def register():
 		return redirect(url_for("login"))
 	else:
 		return render_template("register.html")
+
+
+@app.route("/logout")
+def logout():
+	session.pop('logged_in', None)
+	session.pop('user', None)
+
+	return redirect(url_for("login"))
+
+
+@app.route('/video')
+def video():
+	video = Video.query.first()
+	recommended_videos = Video.query.all()
+	recommended_videos.remove(video)
+	print(recommended_videos)
+	return render_template('video.html', video=video, recommended=recommended_videos)
