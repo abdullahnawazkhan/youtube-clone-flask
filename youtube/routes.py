@@ -196,3 +196,51 @@ def alter_like():
 		return jsonify({"status": 600})
 	else:
 		return jsonify({"error_message" : "invalid value sent. Can either be 'like' or 'dislike'"})
+
+
+@app.route("/add_comment", methods=['POST'])
+def add_comment():
+	# will require the user id
+	# will require the video id
+	# will require comment text
+	request_data = request.get_json()
+	video_id = request_data["video_id"]
+	user_id = request_data["user_id"]
+	comment = request_data["comment"]
+
+	# checking if user exists
+	user_instance = User.query.filter_by(id=user_id).first()
+	if user_instance is None:
+		return jsonify({"message" : "No such user exists", "status" : 201})
+
+	# checking if video exists
+	video_instance = Video.query.filter_by(id=video_id).first()
+	if video_instance is None:
+		return jsonify({"message" : "No such video exists", "status" : 202})
+
+	# adding comment to 'Comment' table
+	new_comment = Comment(text=comment, user_id=user_id, video_id=video_id)
+	db.session.add(new_comment)
+	db.session.commit()
+
+	return jsonify({"message" : "Comment Added", "status" : 200})
+
+
+@app.route('/delete_comment', methods=['POST'])
+def delete_comment():
+	# will require the user id
+	# will require the video id
+	# will require comment id
+	request_data = request.get_json()
+	comment = request_data["comment_id"]
+
+	# check if comment exists
+	added_comment = Comment.query.filter_by(id=comment).first()
+	if added_comment is None:
+		return jsonify({"message" : "No such comment exists", "status" : 201})
+
+	# removing comment
+	db.session.delete(added_comment)
+	db.session.commit()
+
+	return jsonify({"message" : "Comment Deleted", "status" : 200})

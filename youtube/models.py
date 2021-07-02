@@ -42,7 +42,7 @@ class Like(db.Model):
 	video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
 
 	def __repr__(self):
-		return f'{self.video_id}'
+		return f'{self.id}'
 
 
 class Dislike(db.Model):
@@ -52,15 +52,16 @@ class Dislike(db.Model):
 	video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
 
 	def __repr__(self):
-		return f'{self.video_id}'
+		return f'{self.id}'
 
 
 class Comment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	text = db.Column(db.Text, nullable=False)
+	date_uploaded = db.Column(db.DateTime, default=datetime.utcnow)
 
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
 
 	def __repr__(self):
-		return f'{self.video_id}'
+		return f'{self.id}'

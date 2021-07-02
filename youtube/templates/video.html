@@ -31,10 +31,36 @@
 				<h4>Please Login to Like/Dislike Video</h4>
 			{% endif %}
 		</div>
-
-		<!-- comment section -->
+		
+		<!-- comment insert section -->
 		<div>
-			<!-- TODO: Add comment Section -->
+			{% if session['user'] %}
+				<div class='input-group mb-3 mt-3'>
+					<input type="text" name="add_comment" id="add_comment" class='form-control'>
+					<div class='input-group-append'>
+						<button class='btn btn-primary' onclick="add_comment()">Add Comment</button>
+					</div>
+				</div>
+			{% else %}
+				<h4>Please Login to Like/Dislike Video</h4>
+			{% endif %}
+		</div>
+
+		<!-- New comment area -->
+		<span id='new_comment_area'></span>
+
+		<!-- comment list section -->
+		<div>
+			<!-- TODO: need to make the UI better -->
+			<!-- TODO: need to add a delete comment button here -->
+			{% for comment in video.comments %}
+				<div>
+					<h4>{{ comment.user.user_name }}</h4>
+					<p>{{ comment.text }}</p>
+					<!-- TODO: need to minus device date with upload date -->
+					<p>{{ comment.date_uploaded }}</p>
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 
@@ -62,7 +88,6 @@
 		var video_id = "{{ video.id }}";
 		var user_id = "{{ session['user'] }}";
 
-		
 		fetch('/alter_like', {
 			method : 'post',
 			body : JSON.stringify({
@@ -126,6 +151,52 @@
 						}
 						else {
 							alert("Unknown status")
+						}
+					});
+				}
+			}
+		)
+		.catch(
+			function(err) {
+				alert(err)
+			}
+		)
+	}
+
+	function add_comment() {
+		var video_id = "{{ video.id }}";
+		var user_id = "{{ session['user'] }}";
+		var comment_text = document.getElementById("add_comment").value;
+
+		fetch('/add_comment', {
+			method : 'post',
+			body : JSON.stringify({
+				'user_id' : user_id,
+				'comment' : comment_text,
+				'video_id' : video_id
+			}),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8"
+			}
+		})
+		.then(
+			function(response) {
+				if (response.status != 200) {
+					alert("Some problem. Response Code : " + response.status);
+				}
+				else {
+					response.json().then(function(data) {
+						var status = data["status"];
+
+						if (status == 200) {
+							// TODO: Need to add User name and comment date here
+							// removing text from comment input field
+							document.getElementById("add_comment").value = "";
+
+							// adding new comment on UI
+							var new_comment_span = document.getElementById("new_comment_area");
+							var old_comments = new_comment_span.innerHTML;
+							new_comment_span.innerHTML = "<div><h4>User</h4><p>" + comment_text + "</p><p></p></div>" + old_comments;
 						}
 					});
 				}
