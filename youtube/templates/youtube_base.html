@@ -21,13 +21,13 @@
 			</div>
 		</form>
 
-		{% if session['user_id'] %}
+		{% if session['user'] %}
 			<a href="#" class='px-4'>
 				<img src="{{ url_for('static', filename='/images/upload.png') }}" alt="upload_video" width='35px'>
 			</a>
 		{% endif %}
 
-		{% if session['user_id'] %}
+		{% if session['user'] %}
 			<a href="{{ url_for('logout') }}" class='px-4'>
 				<img src="{{ url_for('static', filename='/images/logout.png') }}" alt="logout_button" width='35px'>
 			</a>

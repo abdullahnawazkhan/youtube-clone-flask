@@ -17,14 +17,15 @@
 			<h6>Uploaded By {{ video.user.user_name }}</h6>
 			<h6>{{ video.date_uploaded }}</h6>
 			
-			<p>Likes: {{ video.likes|length }}</p>
-			<p>Dislikes: {{ video.dislikes|length }}</p>
+			<p>Likes: <span id='like_count'>{{ video.likes|length }}</span></p>
+			<p>Dislikes: <span id='dislike_count'>{{ video.dislikes|length }}</span></p>
 
-			{% if session['user_id'] %}
-				<!-- TODO: Need to add add_comment route -->
+			{% if session['user'] %}
 				<div>
-					<img src="{{ url_for('static', filename='images/like.png') }}" alt="like button" width='25px' style='filter:invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%)'>
-					<img src="{{ url_for('static', filename='images/like.png') }}" alt="dislike button" width='25px' style='transform:scaleY(-1)'>
+					<!-- TODO: Need to color buttons depending on user dislike/like value -->
+					<!-- Check jinja python filter -->
+					<img src="{{ url_for('static', filename='images/like.png') }}" onclick="alter_likes('like')" alt="like button" width='25px' style='filter:invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%)'>
+					<img src="{{ url_for('static', filename='images/like.png') }}" onclick="alter_likes('dislike')" alt="dislike button" width='25px' style='transform:scaleY(-1)'>
 				</div>
 			{% else %}
 				<h4>Please Login to Like/Dislike Video</h4>
@@ -57,6 +58,84 @@
 </div>
 
 <script>
+	function alter_likes(value) {
+		var video_id = "{{ video.id }}";
+		var user_id = "{{ session['user'] }}";
 
+		
+		fetch('/alter_like', {
+			method : 'post',
+			body : JSON.stringify({
+				'user_id' : user_id,
+				'value' : value,
+				'video_id' : video_id
+			}),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8"
+			}
+		})
+		.then(
+			function(response) {
+				if (response.status != 200) {
+					alert("Some problem. Response Code : " + response.status);
+				}
+				else {
+					response.json().then(function(data) {
+						var status = data["status"];
+						if (status == 100) {
+							var like_count_value = parseInt(document.getElementById('like_count').innerHTML);
+							like_count_value--;
+							document.getElementById('like_count').innerHTML = like_count_value;
+						}
+						else if (status == 200) {
+							var like_count_value = parseInt(document.getElementById('like_count').innerHTML);
+							like_count_value++;
+							document.getElementById('like_count').innerHTML = like_count_value;
+						}
+						else if (status == 300) {
+							// adding to like
+							var like_count_value = parseInt(document.getElementById('like_count').innerHTML);
+							like_count_value++;
+							document.getElementById('like_count').innerHTML = like_count_value;
+
+							// removing from dislike
+							var dislike_count_value = parseInt(document.getElementById('dislike_count').innerHTML);
+							dislike_count_value--;
+							document.getElementById('dislike_count').innerHTML = dislike_count_value;
+						}
+						else if (status == 400) {
+							var dislike_count_value = parseInt(document.getElementById('dislike_count').innerHTML);
+							dislike_count_value--;
+							document.getElementById('dislike_count').innerHTML = dislike_count_value;
+						}
+						else if (status == 500) {
+							var dislike_count_value = parseInt(document.getElementById('dislike_count').innerHTML);
+							dislike_count_value++;
+							document.getElementById('dislike_count').innerHTML = dislike_count_value;
+						}
+						else if (status == 600) {
+							// adding to dislike
+							var dislike_count_value = parseInt(document.getElementById('dislike_count').innerHTML);
+							dislike_count_value++;
+							document.getElementById('dislike_count').innerHTML = dislike_count_value;
+
+							// removing from like
+							var like_count_value = parseInt(document.getElementById('like_count').innerHTML);
+							like_count_value--;
+							document.getElementById('like_count').innerHTML = like_count_value;
+						}
+						else {
+							alert("Unknown status")
+						}
+					});
+				}
+			}
+		)
+		.catch(
+			function(err) {
+				alert(err)
+			}
+		)
+	}
 </script>
 {% endblock data %}

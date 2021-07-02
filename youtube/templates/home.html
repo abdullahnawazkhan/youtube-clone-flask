@@ -10,7 +10,7 @@
 		<div class='card ms-5 pt-2 mt-3' style='width: 20rem;'>
 			<img src="{{ video.image_path }}" alt="thumnail">
 			<div class='card-body'>
-				<h5 class='card-title'>{{ video.title }}</h5>
+				<h5 class='card-title'><a href="/video?video_id={{ video.id }}">{{ video.title }}</a></h5>
 				<p class='card-text'>{{ video.user.user_name }}</p>
 				<!-- TODO: Need to show difference in date uploaded and today's date -->
 				{% set difference = todays_date - video.date_uploaded %}
